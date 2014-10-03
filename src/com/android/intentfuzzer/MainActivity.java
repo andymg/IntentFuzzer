@@ -1,11 +1,22 @@
 package com.android.intentfuzzer;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.List;
+
+import com.android.intentfuzzer.util.AppInfo;
 import com.android.intentfuzzer.util.Utils;
+
+
+
+
 
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.Dialog;
+import android.util.Log;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -18,6 +29,10 @@ import android.widget.AdapterView.OnItemClickListener;
 public class MainActivity extends Activity {
 	
 	private GridView gridView = null;
+	private final String ALL= "all";
+	private final String SYSTEM = "system";
+	private final String APPS ="apps";
+	private List<AppInfo> listAppInfo = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +77,51 @@ public class MainActivity extends Activity {
           	
           }  
         }); 
-			
+        //add by meng start
+        
+        Bundle extra = this.getIntent().getExtras();
+        int action=0;
+        String typeName ="";
+        String res = "";
+        if (extra != null) {
+        	if(extra.containsKey("type")) {
+        		String actionType = extra.getString("type");
+        		Log.d("test","get action type"+actionType);
+        		if ("all".equals(actionType)) {
+        			action = Utils.ALL_APPS;
+        			typeName = "ALL_APPS";
+        		}
+        		else if("apps".equals(actionType)) {
+        			action = Utils.NONSYSTEM_APPS;
+        			typeName = "NONSYSTEM_APPS";
+        		}
+        		else if("system".equals(actionType)){
+        			action = Utils.SYSTEM_APPS;
+        			typeName = "SYSTEM_APPS";
+        		}
+        		res +=typeName+","+action;
+				listAppInfo = Utils.getPackageInfo(this, Utils.ALL_APPS);
+				for (int i = 0; i < listAppInfo.size(); i++) {
+					AppInfo ai = listAppInfo.get(i);
+					Log.d("test","packageName"+ai.getPackageName());
+					res += typeName+","+ai.getPackageName()+","+ai.getAppName()+'\n';
+				}
+        	}
+        	writeFile("application.cvs",res);
+        	this.finish();
+        }
+        //add by meng end
+	}
+	public void writeFile(String fileName,String write_str) {
+		File file = new File("/sdcard/"+fileName);
+		try {
+		FileOutputStream fos = new FileOutputStream(file);
+		fos.write(write_str.getBytes());
+		fos.close();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
