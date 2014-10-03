@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
         			action = Utils.SYSTEM_APPS;
         			typeName = "SYSTEM_APPS";
         		}
-        		res +=typeName+","+action;
+        		//res +=typeName+","+action;
 				listAppInfo = Utils.getPackageInfo(this, Utils.ALL_APPS);
 				for (int i = 0; i < listAppInfo.size(); i++) {
 					AppInfo ai = listAppInfo.get(i);
